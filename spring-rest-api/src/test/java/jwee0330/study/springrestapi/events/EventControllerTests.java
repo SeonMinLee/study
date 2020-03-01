@@ -102,4 +102,32 @@ public class EventControllerTests {
                 .andExpect(status().isBadRequest());
 
     }
+
+    @DisplayName("POST /api/events 400 - business logic")
+    @Test
+    public void createEvent_time_logic_badRequest() throws Exception {
+        Event event = Event.builder()
+                .id(100)
+                .name("Spring")
+                .description("REST API Development with Spring")
+                .beginEnrollmentDateTime(LocalDateTime.of(2020, 03, 02, 02, 00, 00))
+                .closeEnrollmentDateTime(LocalDateTime.of(2020, 03, 01, 04, 00, 00))
+                .beginEventDateTime(LocalDateTime.of(2020, 03, 05, 00, 00, 00))
+                .endEventDateTime(LocalDateTime.of(2020, 03, 06, 00, 00, 00))
+                .basePrice(100)
+                .maxPrice(200)
+                .limitOfEnrollment(100)
+                .location("강남역 D2 스타텁 팩토리")
+                .eventStatus(EventStatus.PUBLISHED)
+                .free(true)
+                .build();
+
+        mockMvc.perform(post("/api/events/")
+                .content(objectMapper.writeValueAsBytes(event))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaTypes.HAL_JSON_VALUE))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+        ;
+    }
 }

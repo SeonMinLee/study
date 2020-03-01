@@ -7,6 +7,7 @@ import org.modelmapper.internal.Errors;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,14 +22,16 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 @RequiredArgsConstructor
 public class EventController {
 
+    private final EventValidator eventValidator;
     private final EventRepository eventRepository;
     private final ModelMapper modelMapper;
 
     @PostMapping
-    public ResponseEntity createEvent(@RequestBody @Valid EventDto eventDto, Errors errors) {
-        if (errors.hasErrors()) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity createEvent(@RequestBody @Valid EventDto eventDto, BindingResult errors) {
+        if (hasErrors(errors)) return ResponseEntity.badRequest().build();
+        eventValidator.validate(eventDto, errors);
+        if (hasErrors(errors)) return ResponseEntity.badRequest().build();
+
         Event event = modelMapper.map(eventDto, Event.class);
         Event newEvent = eventRepository.save(eventRepository.save(event));
         URI createdUri = linkTo(EventController.class)
@@ -36,5 +39,12 @@ public class EventController {
                 .toUri();
         return ResponseEntity.created(createdUri)
                 .body(newEvent);
+    }
+
+    private boolean hasErrors(BindingResult errors) {
+        if (errors.hasErrors()) {
+            return true;
+        }
+        return false;
     }
 }
