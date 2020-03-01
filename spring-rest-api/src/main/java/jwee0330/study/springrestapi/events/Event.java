@@ -1,6 +1,7 @@
 package jwee0330.study.springrestapi.events;
 
 import lombok.*;
+import org.apache.logging.log4j.util.Strings;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -26,4 +27,16 @@ public class Event {
     @Enumerated(EnumType.STRING)
     private EventStatus eventStatus = EventStatus.DRAFT;
 
+    public void update() {
+        if (getBasePrice() == 0 && getMaxPrice() == 0) {
+            setFree(true);
+        } else {
+            setFree(false);
+        }
+        if (Strings.isBlank(getLocation())) {
+            setOffline(false);
+        } else {
+            setOffline(true);
+        }
+    }
 }

@@ -30,7 +30,7 @@ public class EventControllerTests {
     @Autowired
     ObjectMapper objectMapper;
 
-    @DisplayName("POST /api/events 201")
+    @DisplayName("이벤트를 정상적으로 생성하는 테스트")
     @Test
     public void createEvent() throws Exception {
         EventDto event = EventDto.builder()
