@@ -1,0 +1,3 @@
+logging.level:
+  jwee0330: DEBUG
+  root: WARN
