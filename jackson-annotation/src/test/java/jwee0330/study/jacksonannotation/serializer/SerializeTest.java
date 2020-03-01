@@ -24,16 +24,20 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @JsonTest
 @AutoConfigureJsonTesters
-class SerializerTest {
+class SerializeTest {
 
-    private static final Logger log = LoggerFactory.getLogger(SerializerTest.class);
+    private static final Logger log = LoggerFactory.getLogger(SerializeTest.class);
 
     @Autowired
     JacksonTester json;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     GsonTester gson;
@@ -221,6 +225,57 @@ class SerializerTest {
         //then
         log.debug(result);
         assertThat(result.contains(marshallingTarget)).isTrue();
+    }
+
+    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NON_PRIVATE)
+    public static class Member5 {
+        private String name;
+        public String hobby;
+
+        public Member5(String name, String hobby) {
+            this.name = name;
+            this.hobby = hobby;
+        }
+    }
+
+    @DisplayName("@JsonAutoDetect 테스트")
+    @Test
+    public void json_auto_detect() throws JsonProcessingException {
+        //given
+        Member5 member = new Member5("Jayden", "coding");
+
+        //when
+        String result = objectMapper.writeValueAsString(member);
+
+        //then
+        log.info(result);
+        assertThat(result.contains("name")).isFalse();
+    }
+
+    public static class Member6 {
+        @JsonProperty("my_name")
+        private String name;
+        @JsonProperty("my_hobby")
+        private String hobby;
+
+        public Member6(String name, String hobby) {
+            this.name = name;
+            this.hobby = hobby;
+        }
+    }
+
+    @Test
+    public void json_property() throws JsonProcessingException {
+        //given
+        Member6 member = new Member6("Jayden", "coding");
+
+        //when
+        String result = objectMapper.writeValueAsString(member);
+
+        //then
+        log.info(result);
+        assertThat(result.contains("my_name")).isTrue();
+        assertThat(result.contains("my_hobby")).isTrue();
     }
 
 }
