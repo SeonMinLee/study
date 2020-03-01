@@ -41,6 +41,7 @@ public class EventControllerTests {
                 .maxPrice(200)
                 .limitOfEnrollment(100)
                 .location("강남역 D2 스타텁 팩토리")
+                .eventStatus(EventStatus.PUBLISHED)
                 .free(true)
                 .build();
 //        when(eventRepository.save(event))
@@ -56,6 +57,7 @@ public class EventControllerTests {
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE))
                 .andExpect(jsonPath("id").value(Matchers.not(100)))
                 .andExpect(jsonPath("free").value(Matchers.not(true)))
+                .andExpect(jsonPath("eventStatus").value(Matchers.not(EventStatus.PUBLISHED)))
         ;
     }
 }
