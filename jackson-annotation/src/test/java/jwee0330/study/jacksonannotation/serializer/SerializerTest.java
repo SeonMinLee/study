@@ -28,9 +28,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @JsonTest
 @AutoConfigureJsonTesters
-class SerializerAnnotaitionTest {
+class SerializerTest {
 
-    private static final Logger log = LoggerFactory.getLogger(SerializerAnnotaitionTest.class);
+    private static final Logger log = LoggerFactory.getLogger(SerializerTest.class);
 
     @Autowired
     JacksonTester json;
