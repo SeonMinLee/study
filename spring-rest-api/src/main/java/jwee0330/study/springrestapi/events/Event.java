@@ -1,6 +1,5 @@
 package jwee0330.study.springrestapi.events;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import lombok.*;
 
 import javax.persistence.*;
