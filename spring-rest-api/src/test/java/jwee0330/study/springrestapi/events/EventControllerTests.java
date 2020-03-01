@@ -108,20 +108,17 @@ public class EventControllerTests {
     @DisplayName("POST /api/events 400 - business logic")
     @Test
     public void createEvent_time_logic_badRequest() throws Exception {
-        Event event = Event.builder()
-                .id(100)
+        EventDto event = EventDto.builder()
                 .name("Spring")
                 .description("REST API Development with Spring")
                 .beginEnrollmentDateTime(LocalDateTime.of(2020, 03, 02, 02, 00, 00))
                 .closeEnrollmentDateTime(LocalDateTime.of(2020, 03, 01, 04, 00, 00))
-                .beginEventDateTime(LocalDateTime.of(2020, 03, 05, 00, 00, 00))
-                .endEventDateTime(LocalDateTime.of(2020, 03, 06, 00, 00, 00))
+                .beginEventDateTime(LocalDateTime.of(2020, 02, 06, 00, 00, 00))
+                .endEventDateTime(LocalDateTime.of(2020, 02, 05, 00, 00, 00))
                 .basePrice(100)
                 .maxPrice(200)
                 .limitOfEnrollment(100)
                 .location("강남역 D2 스타텁 팩토리")
-                .eventStatus(EventStatus.PUBLISHED)
-                .free(true)
                 .build();
 
         mockMvc.perform(post("/api/events/")
@@ -130,6 +127,11 @@ public class EventControllerTests {
                 .accept(MediaTypes.HAL_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$[0].objectName").exists())
+                .andExpect(jsonPath("$[0].field").exists())
+                .andExpect(jsonPath("$[0].defaultMessage").exists())
+                .andExpect(jsonPath("$[0].code").exists())
+                .andExpect(jsonPath("$[0].rejectedValue").exists())
         ;
     }
 }
