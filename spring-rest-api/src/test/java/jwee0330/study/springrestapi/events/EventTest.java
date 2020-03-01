@@ -1,12 +1,9 @@
 package jwee0330.study.springrestapi.events;
 
 import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import jwee0330.study.springrestapi.common.VariableSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.runner.RunWith;
 
 import java.util.stream.Stream;
@@ -45,9 +42,9 @@ class EventTest {
         assertThat(event.getDescription()).isEqualTo(description);
     }
 
-    @ParameterizedTest
+//    @ParameterizedTest
 //    @Parameters(method = "parametersForTestFree")
-    @VariableSource
+//    @VariableSource
     public void testFree(Arguments arguments) {
         //given
         Event event = Event.builder()
