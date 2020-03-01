@@ -1,6 +1,7 @@
 package jwee0330.study.springrestapi.events;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jwee0330.study.springrestapi.common.TestDescription;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -89,6 +90,7 @@ public class EventControllerTests {
         ;
     }
 
+    @TestDescription("빈 객체로 요청했을때 에러가 발생하는 테스트")
     @Test
     public void createEvent_Bad_Request_Empty_Input() throws Exception {
         //given
