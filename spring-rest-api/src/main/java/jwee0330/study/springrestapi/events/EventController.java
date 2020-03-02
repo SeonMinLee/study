@@ -44,7 +44,7 @@ public class EventController {
                 .toUri();
 
         newEvent.initialLink(eventDto, errors,
-                new Link("/docs/index.html#resources-create-events", "profile"),
+                new Link("/docs/index.html#resources-events-create", "profile"),
                 linkTo(methodOn(EventController.class).createEvent(eventDto, errors)).withRel("events"),
                 linkTo(methodOn(EventController.class).createEvent(eventDto, errors)).withRel("update")
         );
