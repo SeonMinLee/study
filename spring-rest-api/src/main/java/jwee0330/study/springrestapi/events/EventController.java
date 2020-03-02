@@ -42,8 +42,9 @@ public class EventController {
                 .toUri();
 
         newEvent.initialLink(eventDto,errors,
-                linkTo(methodOn(EventController.class).createEvent(eventDto, errors)).withRel("query-events"),
-                linkTo(methodOn(EventController.class).createEvent(eventDto, errors)).withRel("update-event")
+                linkTo(methodOn(EventController.class).createEvent(eventDto, errors)).withRel("profile"),
+                linkTo(methodOn(EventController.class).createEvent(eventDto, errors)).withRel("events"),
+                linkTo(methodOn(EventController.class).createEvent(eventDto, errors)).withRel("update")
         );
 
         return ResponseEntity.created(createdUri)

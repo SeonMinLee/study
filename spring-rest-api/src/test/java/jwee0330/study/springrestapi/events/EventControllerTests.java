@@ -12,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.snippet.Snippet;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
@@ -66,16 +65,17 @@ public class EventControllerTests {
                 .andExpect(jsonPath("free").value(Matchers.not(true)))
                 .andExpect(jsonPath("eventStatus").value(Matchers.not(EventStatus.PUBLISHED)))
 
-                .andExpect(jsonPath("_link.self").doesNotExist())
-                .andExpect(jsonPath("_link.query-events").doesNotExist())
-                .andExpect(jsonPath("_link.update-event").doesNotExist())
+                .andExpect(jsonPath("_links.profile").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.events").exists())
+                .andExpect(jsonPath("_links.update").exists())
 
                 .andDo(document(
                         "create-event",
                         links(halLinks(),
                                 linkWithRel("profile").description("Link to Profile"),
                                 linkWithRel("self").description("Link to the created event"),
-                                linkWithRel("event").description("Link to view all events"),
+                                linkWithRel("events").description("Link to view all events"),
                                 linkWithRel("update").description("Link to update the events")
                         ),
                         requestHeaders(
@@ -114,8 +114,8 @@ public class EventControllerTests {
                                 fieldWithPath("offline").description("it tells if this event is offline event or not"),
                                 fieldWithPath("eventStatus").description("event status"),
                                 fieldWithPath("_links.self.href").description("link to self"),
-                                fieldWithPath("_links.query-events.href").description("link to query event list"),
-                                fieldWithPath("_links.update-event.href").description("link to update existing event"),
+                                fieldWithPath("_links.events.href").description("link to query event list"),
+                                fieldWithPath("_links.update.href").description("link to update existing event"),
                                 fieldWithPath("_links.profile.href").description("link to profile")
                         )
                 ))
