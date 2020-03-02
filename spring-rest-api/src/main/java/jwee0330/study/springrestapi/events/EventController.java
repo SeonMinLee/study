@@ -6,13 +6,17 @@ import jwee0330.study.springrestapi.common.ErrorsResource;
 import jwee0330.study.springrestapi.index.IndexController;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.hateoas.CollectionModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.Links;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,4 +68,11 @@ public class EventController {
                 .body(new ErrorsResource(errors, linkTo(methodOn(IndexController.class).index()).withRel("index")));
     }
 
+    @GetMapping
+    public ResponseEntity queryEvents(Pageable pageable, PagedResourcesAssembler<Event> assembler) {
+        Page<Event> page = this.eventRepository.findAll(pageable);
+        PagedModel<EntityModel<Event>> entityModels = assembler.toModel(page);
+        return ResponseEntity.ok(this.eventRepository.findAll(pageable));
+//        return ResponseEntity.ok(entityModels);
+    }
 }
