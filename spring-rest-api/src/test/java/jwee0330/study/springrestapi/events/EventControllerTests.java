@@ -3,6 +3,7 @@ package jwee0330.study.springrestapi.events;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jwee0330.study.springrestapi.common.RestDocsConfiguration;
 import jwee0330.study.springrestapi.common.TestDescription;
+import lombok.SneakyThrows;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,16 +17,18 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDateTime;
 import java.util.stream.IntStream;
 
+import static org.assertj.core.api.AssertionsForClassTypes.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -224,11 +227,74 @@ public class EventControllerTests {
 
     }
 
-    private void generateEvent(int index) {
+    private Event generateEvent(int index) {
         Event event = Event.builder()
                 .name("event " + index)
                 .description("test event")
                 .build();
-        eventRepository.save(event);
+        return eventRepository.save(event);
+    }
+
+    @DisplayName("기존의 이벤트를 하나 조회하기")
+    @Test
+    public void getEvent() throws Exception {
+        //given
+        Event event = this.generateEvent(100);
+
+        //when
+        ResultActions perform = this.mockMvc.perform(get("/api/events/{id}", event.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaTypes.HAL_JSON_VALUE));
+
+        // then
+        perform.andExpect(status().isOk())
+                .andExpect(jsonPath("name").exists())
+                .andExpect(jsonPath("id").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.profile").exists())
+        ;
+    }
+
+    @DisplayName("없는 이벤트는 조회했을 때 404 응답 받기")
+    @Test
+    public void getEvent404() throws Exception {
+
+        //when
+        ResultActions perform = this.mockMvc.perform(get("/api/events/132423"));
+
+        //then
+        perform.andExpect(status().isNotFound());
+    }
+
+    @DisplayName("입력받은 id의 이벤트를 수정한다")
+    @Test
+    public void changeEvent() throws Exception {
+        //given
+        Event event = this.generateEvent(101);
+
+        EventDto eventDto = EventDto.builder()
+                .name("Jayden")
+                .description("changed")
+                .basePrice(0)
+                .maxPrice(0)
+                .location("location")
+                .limitOfEnrollment(10)
+                .beginEnrollmentDateTime(LocalDateTime.of(2020, 03, 02, 02, 00, 00))
+                .closeEnrollmentDateTime(LocalDateTime.of(2020, 03, 02, 04, 00, 00))
+                .beginEventDateTime(LocalDateTime.of(2020, 03, 05, 00, 00, 00))
+                .endEventDateTime(LocalDateTime.of(2020, 03, 06, 00, 00, 00))
+                .build();
+
+        //when
+        ResultActions perform = this.mockMvc.perform(put("/api/events/{id}", event.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(eventDto)));
+
+        //then
+        perform.andExpect(status().isOk())
+                .andExpect(jsonPath("name").value(Matchers.is("Jayden")))
+                .andExpect(jsonPath("description").value(Matchers.is("changed")))
+                .andExpect(jsonPath("_links.self").exists())
+        ;
     }
 }

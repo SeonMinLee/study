@@ -8,14 +8,12 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedModel;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -23,15 +21,15 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Controller
-//@RequestMapping(value = "/api/events", produces = MediaTypes.HAL_JSON_VALUE)
-@RequestMapping(value = "/api/events", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/events", produces = MediaTypes.HAL_JSON_VALUE)
+//@RequestMapping(value = "/api/events", produces = MediaType.APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
 public class EventController {
 
@@ -89,7 +87,41 @@ public class EventController {
         return ResponseEntity.ok(entityModels);
     }
 
-    private ResponseEntity query(@RequestParam Integer id) {
-        return ResponseEntity.ok(this.eventRepository.findById(id));
+    @GetMapping("/{id}")
+    public ResponseEntity getEvent(@PathVariable Integer id) {
+        Optional<Event> eventOptional = this.eventRepository.findById(id);
+        if (eventOptional.isPresent() == false) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Event event = eventOptional.get();
+        event.add(linkTo(EventController.class).slash(event.getId()).withSelfRel());
+        event.add(linkTo(EventController.class).slash(event.getId()).withRel("profile"));
+
+        return ResponseEntity.ok(event);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity putEvent(@PathVariable Integer id, @RequestBody @Valid EventDto eventDto, BindingResult errors) {
+        Optional<Event> optionalEvent = this.eventRepository.findById(id);
+        if (optionalEvent.isPresent() == false) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (errors.hasErrors()) {
+            return ResponseEntity.badRequest().body(new ErrorsResource(errors));
+        }
+        this.eventValidator.validate(eventDto, errors);
+        if (errors.hasErrors()) {
+            return ResponseEntity.badRequest().body(new ErrorsResource(errors));
+        }
+
+        Event existingEvent = optionalEvent.get();
+        this.modelMapper.map(eventDto, existingEvent);
+        Event changedEvent = this.eventRepository.save(existingEvent);
+
+        changedEvent.add(linkTo(EventController.class).slash("{id}").withSelfRel());
+
+        return ResponseEntity.ok(changedEvent);
     }
 }
