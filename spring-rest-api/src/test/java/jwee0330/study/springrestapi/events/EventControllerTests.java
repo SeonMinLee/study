@@ -67,11 +67,10 @@ public class EventControllerTests {
                 .andExpect(jsonPath("id").value(Matchers.not(100)))
                 .andExpect(jsonPath("free").value(Matchers.not(true)))
                 .andExpect(jsonPath("eventStatus").value(Matchers.not(EventStatus.PUBLISHED)))
-
-                .andExpect(jsonPath("_links.profile").exists())
-                .andExpect(jsonPath("_links.self").exists())
-                .andExpect(jsonPath("_links.events").exists())
-                .andExpect(jsonPath("_links.update").exists())
+//                .andExpect(jsonPath("_links.profile").exists())
+//                .andExpect(jsonPath("_links.self").exists())
+//                .andExpect(jsonPath("_links.events").exists())
+//                .andExpect(jsonPath("_links.update").exists())
 
                 .andDo(document(
                         "create-event",

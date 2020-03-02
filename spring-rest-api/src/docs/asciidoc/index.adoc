@@ -91,7 +91,7 @@ include::{snippets}/errors/http-response.adoc[]
 
 이벤트 리소스는 이벤트를 만들거나 조회할 때 사용한다.
 
-[[events-create]]
+[[resources-events-create]]
 === 이벤트 생성
 
 `POST` 요청을 사용해서 새 이벤트를 만들 수 있다.

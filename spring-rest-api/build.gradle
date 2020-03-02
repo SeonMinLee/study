@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.2.5.RELEASE'
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id 'org.asciidoctor.convert' version '1.5.8'
+    id "io.freefair.lombok" version "5.0.0-rc4"
     id 'java'
 }
 
@@ -26,7 +27,7 @@ ext {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-hateoas'// https://mvnrepository.com/artifact/org.modelmapper/modelmapper
+    implementation 'org.springframework.boot:spring-boot-starter-hateoas'
     implementation 'org.modelmapper:modelmapper:2.3.6'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'
@@ -38,6 +39,11 @@ dependencies {
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
     testImplementation 'pl.pragmatists:JUnitParams:1.1.1'
 
+}
+
+task copyReport(type: Copy) {
+    from file("$buildDir/asciidoc/html5")
+    into file("$buildDir/resources/main/static/dcos")
 }
 
 test {

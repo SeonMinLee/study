@@ -41,8 +41,8 @@ public class EventController {
                 .slash("{id}")
                 .toUri();
 
-        newEvent.initialLink(eventDto,errors,
-                linkTo(methodOn(EventController.class).createEvent(eventDto, errors)).withRel("profile"),
+        newEvent.initialLink(eventDto, errors,
+                linkTo("/docs/index.html#resource-events-create").withRel("profile"),
                 linkTo(methodOn(EventController.class).createEvent(eventDto, errors)).withRel("events"),
                 linkTo(methodOn(EventController.class).createEvent(eventDto, errors)).withRel("update")
         );
