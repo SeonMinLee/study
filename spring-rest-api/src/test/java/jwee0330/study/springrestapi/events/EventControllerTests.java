@@ -7,6 +7,7 @@ import lombok.SneakyThrows;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -47,6 +48,9 @@ public class EventControllerTests {
 
     @Autowired
     EventRepository eventRepository;
+
+    @Autowired
+    ModelMapper modelMapper;
 
     @DisplayName("이벤트를 정상적으로 생성하는 테스트")
     @Test
@@ -295,6 +299,22 @@ public class EventControllerTests {
                 .andExpect(jsonPath("name").value(Matchers.is("Jayden")))
                 .andExpect(jsonPath("description").value(Matchers.is("changed")))
                 .andExpect(jsonPath("_links.self").exists())
+        ;
+    }
+
+    @DisplayName("존재하지 않는 이벤트 수정 실패")
+    @Test
+    public void updateEvent404() throws Exception {
+        //given
+        Event event = this.generateEvent(200);
+        EventDto eventDto = this.modelMapper.map(event, EventDto.class);
+
+        //when & then
+        this.mockMvc.perform(put("/api/events/1231312", event.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(eventDto)))
+        .andDo(print())
+        .andExpect(status().isNotFound())
         ;
     }
 }
