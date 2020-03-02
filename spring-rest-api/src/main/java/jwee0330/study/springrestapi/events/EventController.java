@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Links;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -42,7 +44,7 @@ public class EventController {
                 .toUri();
 
         newEvent.initialLink(eventDto, errors,
-                linkTo("/docs/index.html#resource-events-create").withRel("profile"),
+                new Link("/docs/index.html#resources-create-events", "profile"),
                 linkTo(methodOn(EventController.class).createEvent(eventDto, errors)).withRel("events"),
                 linkTo(methodOn(EventController.class).createEvent(eventDto, errors)).withRel("update")
         );
