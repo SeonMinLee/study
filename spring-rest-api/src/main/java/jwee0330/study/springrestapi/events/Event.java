@@ -1,16 +1,28 @@
 package jwee0330.study.springrestapi.events;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.*;
 import org.apache.logging.log4j.util.Strings;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.validation.BindingResult;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Builder @AllArgsConstructor @NoArgsConstructor
-@Getter @Setter @EqualsAndHashCode(of = "id")
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode(of = "id")
 @Entity
-public class Event {
-    @Id @GeneratedValue
+public class Event extends EntityModel<Event> {
+    @Id
+    @GeneratedValue
     private Integer id;
     private String name;
     private String description;
@@ -37,6 +49,13 @@ public class Event {
             setOffline(false);
         } else {
             setOffline(true);
+        }
+    }
+
+    public void initialLink(EventDto eventDto, BindingResult errors, Link... links) throws JsonProcessingException {
+        this.add(linkTo(methodOn(EventController.class).createEvent(eventDto, errors)).withSelfRel());
+        for (Link link : links) {
+            this.add(link);
         }
     }
 }
