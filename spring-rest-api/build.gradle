@@ -48,4 +48,14 @@ test {
 asciidoctor {
     inputs.dir snippetsDir
     dependsOn test
+    ext {
+        set('outputDir', file("build/asciidoc"))
+    }
+}
+
+bootJar {
+    dependsOn asciidoctor
+    from ("${asciidoctor.outputDir}/html5") {
+        into 'static/docs'
+    }
 }
