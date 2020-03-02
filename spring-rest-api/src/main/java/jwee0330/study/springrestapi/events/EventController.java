@@ -2,8 +2,11 @@ package jwee0330.study.springrestapi.events;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jwee0330.study.springrestapi.common.ErrorsResource;
+import jwee0330.study.springrestapi.index.IndexController;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Links;
 import org.springframework.hateoas.MediaTypes;
@@ -32,10 +35,13 @@ public class EventController {
 
     @PostMapping
     public ResponseEntity createEvent(@RequestBody @Valid EventDto eventDto, BindingResult errors) throws JsonProcessingException {
-        if (hasErrors(errors)) return ResponseEntity.badRequest().body(errors);
+        if (errors.hasErrors()) {
+            return getResponseEntity(errors);
+        }
         eventValidator.validate(eventDto, errors);
-        if (hasErrors(errors)) return ResponseEntity.badRequest().body(errors);
-
+        if (errors.hasErrors()) {
+            return getResponseEntity(errors);
+        }
         Event event = modelMapper.map(eventDto, Event.class);
         event.update();
         Event newEvent = eventRepository.save(eventRepository.save(event));
@@ -53,10 +59,9 @@ public class EventController {
                 .body(newEvent);
     }
 
-    private boolean hasErrors(BindingResult errors) {
-        if (errors.hasErrors()) {
-            return true;
-        }
-        return false;
+    private ResponseEntity getResponseEntity(BindingResult errors) {
+        return ResponseEntity.badRequest()
+                .body(new ErrorsResource(errors, linkTo(methodOn(IndexController.class).index()).withRel("index")));
     }
+
 }
