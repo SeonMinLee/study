@@ -256,6 +256,8 @@ public class EventControllerTests {
                 .andExpect(jsonPath("id").exists())
                 .andExpect(jsonPath("_links.self").exists())
                 .andExpect(jsonPath("_links.profile").exists())
+            .andDo(document("get-an-event"))
+        //todo 문서 생성
         ;
     }
 

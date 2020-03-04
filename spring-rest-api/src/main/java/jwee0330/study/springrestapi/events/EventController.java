@@ -96,7 +96,7 @@ public class EventController {
 
         Event event = eventOptional.get();
         event.add(linkTo(EventController.class).slash(event.getId()).withSelfRel());
-        event.add(linkTo(EventController.class).slash(event.getId()).withRel("profile"));
+        event.add(new Link("/docs/index.html#resources-events-get").withRel("profile"));
 
         return ResponseEntity.ok(event);
     }
