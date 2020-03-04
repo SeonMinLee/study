@@ -1,23 +1,31 @@
 package jwee0330.study.springrestapi.accouts;
 
 
+import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
+import org.junit.Rule;
 import org.junit.jupiter.api.Test;
+import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 @SpringBootTest
 @ActiveProfiles("test")
 class AccountServiceTest {
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Autowired
     AccountService accountService;
@@ -44,5 +52,15 @@ class AccountServiceTest {
         assertThat(userDetails.getUsername(), equalTo(username));
         assertThat(userDetails.getPassword(), equalTo(password));
 
+    }
+
+    @Test
+    void findByUsernameFail() {
+        String username = "random@email.com";
+        expectedException.expect(UsernameNotFoundException.class);
+        expectedException.expectMessage(containsString(username));
+
+        //when
+        accountService.loadUserByUsername(username);
     }
 }
