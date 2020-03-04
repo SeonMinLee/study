@@ -2,7 +2,6 @@ package jwee0330.study.springrestapi.accouts;
 
 
 import org.assertj.core.api.Assertions;
-import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
@@ -16,7 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
@@ -56,11 +55,16 @@ class AccountServiceTest {
 
     @Test
     void findByUsernameFail() {
+        // Expected
         String username = "random@email.com";
         expectedException.expect(UsernameNotFoundException.class);
         expectedException.expectMessage(containsString(username));
 
-        //when
-        accountService.loadUserByUsername(username);
+        // When
+        Assertions
+                .assertThatThrownBy(() -> accountService.loadUserByUsername(username))
+                .hasMessageContaining(username)
+                .isExactlyInstanceOf(UsernameNotFoundException.class);
+
     }
 }
