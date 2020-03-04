@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.stream.Collectors;
@@ -32,6 +33,9 @@ class AccountServiceTest {
     @Autowired
     AccountRepository accountRepository;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     @Test
     public void findByUsername() {
         //given
@@ -39,7 +43,7 @@ class AccountServiceTest {
         String password = "pass";
         Account account = Account.builder()
                 .email(username)
-                .password(password)
+                .password(passwordEncoder.encode(password))
                 .roles(Stream.of(AccountRole.ADMIN, AccountRole.USER).collect(Collectors.toSet()))
                 .build();
 
@@ -49,8 +53,7 @@ class AccountServiceTest {
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
         assertThat(userDetails.getUsername(), equalTo(username));
-        assertThat(userDetails.getPassword(), equalTo(password));
-
+        assertThat(userDetails.getPassword(), equalTo(passwordEncoder.encode(password)));
     }
 
     @Test
