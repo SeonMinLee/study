@@ -1,30 +1,19 @@
 package jwee0330.study.springrestapi.events;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jwee0330.study.springrestapi.common.RestDocsConfiguration;
+import jwee0330.study.springrestapi.common.BaseControllerTest;
 import jwee0330.study.springrestapi.common.TestDescription;
-import lombok.SneakyThrows;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDateTime;
 import java.util.stream.IntStream;
 
-import static org.assertj.core.api.AssertionsForClassTypes.*;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -33,24 +22,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@AutoConfigureRestDocs
-@Import(RestDocsConfiguration.class)
-@ActiveProfiles("test")
-public class EventControllerTests {
-
-    @Autowired
-    MockMvc mockMvc;
-
-    @Autowired
-    ObjectMapper objectMapper;
+public class EventControllerTests extends BaseControllerTest {
 
     @Autowired
     EventRepository eventRepository;
-
-    @Autowired
-    ModelMapper modelMapper;
 
     @DisplayName("이벤트를 정상적으로 생성하는 테스트")
     @Test
@@ -226,7 +201,7 @@ public class EventControllerTests {
                 .param("sort", "name,DESC"))
                 .andDo(print())
                 .andExpect(status().isOk())
-        .andExpect(jsonPath("page").exists())
+                .andExpect(jsonPath("page").exists())
         ;
 
     }
@@ -256,7 +231,7 @@ public class EventControllerTests {
                 .andExpect(jsonPath("id").exists())
                 .andExpect(jsonPath("_links.self").exists())
                 .andExpect(jsonPath("_links.profile").exists())
-            .andDo(document("get-an-event"))
+                .andDo(document("get-an-event"))
         //todo 문서 생성
         ;
     }
@@ -315,8 +290,8 @@ public class EventControllerTests {
         this.mockMvc.perform(put("/api/events/1231312", event.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(eventDto)))
-        .andDo(print())
-        .andExpect(status().isNotFound())
+                .andDo(print())
+                .andExpect(status().isNotFound())
         ;
     }
 }
