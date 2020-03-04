@@ -20,7 +20,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @NoArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "id", callSuper = false)
 @Entity
 public class Event extends EntityModel<Event> {
     @Id
@@ -38,6 +38,7 @@ public class Event extends EntityModel<Event> {
     private int limitOfEnrollment;
     private boolean offline;
     private boolean free;
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private EventStatus eventStatus = EventStatus.DRAFT;
 
