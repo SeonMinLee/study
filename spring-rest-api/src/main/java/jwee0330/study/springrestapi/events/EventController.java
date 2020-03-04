@@ -55,7 +55,7 @@ public class EventController {
                 .toUri();
 
         newEvent.initialLink(eventDto, errors,
-                new Link("/docs/index.html#resources-events-create", "profile"),
+                new Link("/static/docs/index.html#resources-events-create", "profile"),
                 linkTo(methodOn(EventController.class).createEvent(eventDto, errors)).withRel("events"),
                 linkTo(methodOn(EventController.class).createEvent(eventDto, errors)).withRel("update")
         );
@@ -96,7 +96,7 @@ public class EventController {
 
         Event event = eventOptional.get();
         event.add(linkTo(EventController.class).slash(event.getId()).withSelfRel());
-        event.add(new Link("/docs/index.html#resources-events-get").withRel("profile"));
+        event.add(new Link("/static/docs/index.html#resources-events-get").withRel("profile"));
 
         return ResponseEntity.ok(event);
     }
