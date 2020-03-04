@@ -31,12 +31,22 @@ public class AppConfiguration {
             @Autowired
             AccountService accountService;
 
+<<<<<<< HEAD
+=======
+//            @Autowired
+//            AppProperties appProperties;
+
+>>>>>>> e645adf61ff2fd16f834adf551c878be2d8e0225
             @Override
             public void run(ApplicationArguments args) {
                 Account account = Account.builder()
                         .email("jayden@email.com")
                         .password("pass")
                         .build();
+<<<<<<< HEAD
+=======
+
+>>>>>>> e645adf61ff2fd16f834adf551c878be2d8e0225
                 accountService.saveAccount(account);
             }
         };
