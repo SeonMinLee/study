@@ -16,7 +16,7 @@ public class ErrorsResource extends RepresentationModel<ErrorsResource> {
     public ErrorsResource(BindingResult errors, Link... links) {
         this.content = errors.getAllErrors();
         for (Link link : links) {
-            this.add(link);
+            add(link);
         }
     }
 }
