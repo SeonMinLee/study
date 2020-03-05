@@ -1,6 +1,7 @@
 package jwee0330.study.springrestapi.accouts;
 
 
+import jwee0330.study.springrestapi.common.AppProperties;
 import org.assertj.core.api.Assertions;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
@@ -10,8 +11,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -22,6 +26,8 @@ import static org.junit.Assert.assertThat;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Rollback(value = true)
+@Transactional
 class AccountServiceTest {
 
     @Rule
@@ -34,26 +40,29 @@ class AccountServiceTest {
     AccountRepository accountRepository;
 
     @Autowired
-    PasswordEncoder passwordEncoder;
+    AppProperties appProperties;
+
+    PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
     @Test
     public void findByUsername() {
-        //given
-        String username = "jayden@email.com";
-        String password = "pass";
+        // Given
+        String username = "JJJ@email.com";
+        String password = "jayden";
         Account account = Account.builder()
                 .email(username)
-                .password(passwordEncoder.encode(password))
+                .password(password)
                 .roles(Stream.of(AccountRole.ADMIN, AccountRole.USER).collect(Collectors.toSet()))
-                .build();
+                .build()
+                ;
+        accountService.saveAccount(account);
 
-        this.accountRepository.save(account);
-
+        // When
         UserDetailsService userDetailsService = accountService;
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-        assertThat(userDetails.getUsername(), equalTo(username));
-        assertThat(userDetails.getPassword(), equalTo(passwordEncoder.encode(password)));
+        // Then
+        Assertions.assertThat(passwordEncoder.matches(password, userDetails.getPassword())).isTrue();
     }
 
     @Test

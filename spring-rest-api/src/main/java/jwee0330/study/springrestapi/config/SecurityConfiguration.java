@@ -13,8 +13,8 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.rememberme.InMemoryTokenRepositoryImpl;
-import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 
 @Configuration
 @EnableWebSecurity
@@ -27,8 +27,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     PasswordEncoder passwordEncoder;
 
     @Bean
-    public PersistentTokenRepository tokenStore() {
-        return new InMemoryTokenRepositoryImpl();
+    public TokenStore tokenStore() {
+        return new InMemoryTokenStore();
     }
 
     @Bean
@@ -55,20 +55,20 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     /**
      * security DEBUG로 살펴보면 타는 순서 2
      */
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.formLogin();
-        http.authorizeRequests()
-                .antMatchers("/guest/**").permitAll()
-                .antMatchers("/manager/**").hasRole("MANAGER")
-                .antMatchers("/admin/**").hasRole("ADMIN");
-        http.anonymous()
-                .and()
-            .authorizeRequests()
-                .mvcMatchers(HttpMethod.GET, "/api/**").permitAll()
-            .anyRequest().authenticated()
-        .and()
-            .exceptionHandling();
-    }
+//    @Override
+//    protected void configure(HttpSecurity http) throws Exception {
+//        http.formLogin();
+//        http.authorizeRequests()
+//                .antMatchers("/guest/**").permitAll()
+//                .antMatchers("/manager/**").hasRole("MANAGER")
+//                .antMatchers("/admin/**").hasRole("ADMIN");
+//        http.anonymous()
+//                .and()
+//                .authorizeRequests()
+//                .mvcMatchers(HttpMethod.GET, "/api/**").permitAll()
+//                .anyRequest().authenticated()
+//                .and()
+//                .exceptionHandling();
+//    }
 
 }
