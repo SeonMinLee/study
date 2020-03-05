@@ -1,8 +1,8 @@
 package jwee0330.study.springrestapi.events;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jwee0330.study.springrestapi.accouts.Account;
-import jwee0330.study.springrestapi.index.IndexController;
 import lombok.*;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.hateoas.EntityModel;
@@ -11,7 +11,6 @@ import org.springframework.validation.BindingResult;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -39,6 +38,9 @@ public class Event extends EntityModel<Event> {
     private int limitOfEnrollment;
     private boolean offline;
     private boolean free;
+    @ManyToOne
+    @JsonSerialize(using = Account.AccountSerializer.class)
+    private Account manager;
     @Builder.Default
     @Enumerated(EnumType.STRING)
     private EventStatus eventStatus = EventStatus.DRAFT;

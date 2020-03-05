@@ -51,7 +51,7 @@ public class EventControllerTests extends BaseControllerTest {
         this.accountRepository.deleteAll();
     }
 
-//    @Test
+    @Test
     @TestDescription("정상적으로 이벤트를 생성하는 테스트")
     public void createEvent() throws Exception {
         EventDto event = EventDto.builder()

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jwee0330.study.springrestapi.common.ErrorsResource;
 import jwee0330.study.springrestapi.index.IndexController;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -15,6 +16,10 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +45,10 @@ public class EventController {
 
     @PostMapping
     public ResponseEntity createEvent(@RequestBody @Valid EventDto eventDto, BindingResult errors) throws JsonProcessingException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication.isAuthenticated()) {
+        }
         if (errors.hasErrors()) {
             return getResponseEntity(errors);
         }
@@ -56,8 +65,8 @@ public class EventController {
 
         newEvent.initialLink(eventDto, errors,
                 new Link("/static/docs/index.html#resources-events-create", "profile"),
-                linkTo(methodOn(EventController.class).createEvent(eventDto, errors)).withRel("events"),
-                linkTo(methodOn(EventController.class).createEvent(eventDto, errors)).withRel("update")
+                linkTo(methodOn(EventController.class).createEvent(eventDto, errors)).withRel("query-events"),
+                linkTo(methodOn(EventController.class).createEvent(eventDto, errors)).withRel("update-event")
         );
 
         return ResponseEntity.created(createdUri)
@@ -70,7 +79,8 @@ public class EventController {
     }
 
     @GetMapping
-    public ResponseEntity queryEvents(Pageable pageable, PagedResourcesAssembler<Event> assembler) {
+    public ResponseEntity queryEvents(Pageable pageable, PagedResourcesAssembler<Event> assembler,
+                                      @AuthenticationPrincipal User user) {
         Page<Event> page = this.eventRepository.findAll(pageable);
         List<Event> events = page.getContent();
 
