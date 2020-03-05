@@ -1,6 +1,7 @@
 package jwee0330.study.springrestapi.events;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jwee0330.study.springrestapi.accouts.Account;
 import jwee0330.study.springrestapi.index.IndexController;
 import lombok.*;
 import org.apache.logging.log4j.util.Strings;
@@ -60,5 +61,9 @@ public class Event extends EntityModel<Event> {
         for (Link link : links) {
             this.add(link);
         }
+    }
+
+    public void setManager(Account account) {
+
     }
 }

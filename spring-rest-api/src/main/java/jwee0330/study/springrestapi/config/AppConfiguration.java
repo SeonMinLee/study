@@ -42,7 +42,6 @@ public class AppConfiguration {
             @Override
             public void run(ApplicationArguments args) throws Exception {
                 Account admin = Account.builder()
-                        .id(1)
                         .email(appProperties.getAdminUsername())
                         .password(passwordEncoder().encode(appProperties.getAdminPassword()))
                         .roles(Stream.of(AccountRole.ADMIN, AccountRole.USER).collect(Collectors.toSet()))
@@ -50,7 +49,6 @@ public class AppConfiguration {
                 accountService.saveAccount(admin);
 
                 Account user = Account.builder()
-                        .id(2)
                         .email(appProperties.getUserUsername())
                         .password(passwordEncoder().encode(appProperties.getUserPassword()))
                         .roles(Stream.of(AccountRole.ADMIN, AccountRole.USER).collect(Collectors.toSet()))
