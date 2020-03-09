@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.stream.Stream;
+import java.util.Arrays;
 
 @SpringBootTest
 @Rollback(false)
@@ -31,12 +31,9 @@ class MemberRepositoryTest {
         Member john = new Member("john", 30, teamA);
         Member doe = new Member("doe", 20, teamA);
         Member jack = new Member("jack", 10, teamB);
-        Member katty = new Member("katty", 25, teamB);
+        Member kate = new Member("kate", 25, teamB);
 
-        memberRepository.save(john);
-        memberRepository.save(doe);
-        memberRepository.save(jack);
-        memberRepository.save(katty);
+        memberRepository.saveAll(Arrays.asList(john, doe, jack, kate));
     }
 
 
