@@ -14,11 +14,11 @@ import study.querydsl.entity.Team;
 import javax.persistence.EntityManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static study.querydsl.entity.QMember.*;
+import static study.querydsl.entity.QMember.member;
 
 @Transactional
 @SpringBootTest
-public class QuerydslBasicTest{
+public class QuerydslBasicTest {
 
     @Autowired
     EntityManager em;
@@ -86,5 +86,40 @@ public class QuerydslBasicTest{
 
         // then
         assertThat(foundOne.getUsername()).isEqualTo("member2");
+    }
+
+    @DisplayName("검색 조건 쿼리")
+    @Test
+    public void search() {
+        // given & when
+        Member foundOne = queryFactory
+                .selectFrom(member)
+                .where(member.username.eq("member1")
+                        .and(member.age.between(10, 30)))
+                .fetchOne();
+
+        // then
+        assertThat(foundOne.getUsername()).isEqualTo("member1");
+    }
+
+    /**
+     * where 절 안의 조건을 , 로 나열 가능
+     * null 이 있으면 where 조건을 무시한다.
+     * 이를 활용하여 동적쿼리를 편리하게 작성할 수 있다.
+     */
+    @DisplayName("검색 조건 쿼리 AND PARAM 의 다른 용법")
+    @Test
+    public void searchAndParam() {
+        // given & when
+        Member foundOne = queryFactory
+                .selectFrom(member)
+                .where(
+                        member.username.eq("member1"),
+                        member.age.between(10, 30), null
+                )
+                .fetchOne();
+
+        // then
+        assertThat(foundOne.getUsername()).isEqualTo("member1");
     }
 }
