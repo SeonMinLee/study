@@ -1,9 +1,7 @@
 package study.querydsl;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +14,11 @@ import study.querydsl.entity.Team;
 import javax.persistence.EntityManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static study.querydsl.entity.QMember.*;
 
 @Transactional
 @SpringBootTest
-public class QuerydslBasicTest {
+public class QuerydslBasicTest{
 
     @Autowired
     EntityManager em;
@@ -43,6 +42,8 @@ public class QuerydslBasicTest {
         em.persist(member2);
         em.persist(member3);
         em.persist(member4);
+
+        this.queryFactory = new JPAQueryFactory(em);
     }
 
     @DisplayName("JPQL :: findOne")
@@ -61,7 +62,6 @@ public class QuerydslBasicTest {
     @Test
     public void startQuerydsl() {
         //given
-        queryFactory = new JPAQueryFactory(em);
         QMember m = new QMember("m");
 
         //when
@@ -72,5 +72,19 @@ public class QuerydslBasicTest {
                 .fetchOne();
         //then
         assertThat(foundOne.getUsername()).isEqualTo("member1");
+    }
+
+    @DisplayName("Q타입 확인")
+    @Test
+    public void basicQEntity() {
+        //given && when
+        Member foundOne = queryFactory
+                .select(member)
+                .from(member)
+                .where(member.username.eq("member2"))
+                .fetchOne();
+
+        // then
+        assertThat(foundOne.getUsername()).isEqualTo("member2");
     }
 }
