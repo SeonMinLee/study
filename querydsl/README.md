@@ -48,3 +48,11 @@ member.username.startWith("jayden")  // link 'jayden%' 검색
     .having(item.price.gt(1000))
 ...
 ```
+
+### 조인 - 기본 조인
+조인의 기본 문법은 첫 번째 파라미터에 조인 대상을 지정하고,  
+두 번째 파라미터에 별칭(alias)으로 사용할 Q 타입을 지정하면 된다.
+
+```java
+join(조인 대상, 별칭으로 사용할 Q 타입)
+```

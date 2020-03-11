@@ -11,17 +11,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import study.querydsl.entity.Member;
 import study.querydsl.entity.QMember;
-import study.querydsl.entity.QTeam;
 import study.querydsl.entity.Team;
 
 import javax.persistence.EntityManager;
-
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static study.querydsl.entity.QMember.*;
 import static study.querydsl.entity.QMember.member;
-import static study.querydsl.entity.QTeam.*;
+import static study.querydsl.entity.QTeam.team;
 
 @Transactional
 @SpringBootTest
@@ -201,14 +198,14 @@ public class QuerydslBasicTest {
     /**
      * 쿼리 결과
      * select
-     *         member0_.member_id as member_i1_1_,
-     *         member0_.age as age2_1_,
-     *         member0_.team_id as team_id4_1_,
-     *         member0_.username as username3_1_
-     *     from
-     *         member member0_
-     *     order by
-     *         member0_.username desc limit ? offset ?
+     * member0_.member_id as member_i1_1_,
+     * member0_.age as age2_1_,
+     * member0_.team_id as team_id4_1_,
+     * member0_.username as username3_1_
+     * from
+     * member member0_
+     * order by
+     * member0_.username desc limit ? offset ?
      */
     @DisplayName("페이징 - 1")
     @Test
@@ -235,7 +232,7 @@ public class QuerydslBasicTest {
                 .fetchResults();
 
         //then
-        assertThat(results.getTotal()).isEqualTo(2);
+        assertThat(results.getTotal()).isEqualTo(4);
         assertThat(results.getLimit()).isEqualTo(2);
         assertThat(results.getOffset()).isEqualTo(1);
         assertThat(results.getResults().size()).isEqualTo(2);
@@ -243,16 +240,16 @@ public class QuerydslBasicTest {
 
     /**
      * Querydsl 이 제공하는 Tuple
-     *
+     * <p>
      * [query]
      * select
-     *         count(member0_.member_id) as col_0_0_,
-     *         sum(member0_.age) as col_1_0_,
-     *         avg(cast(member0_.age as double)) as col_2_0_,
-     *         max(member0_.age) as col_3_0_,
-     *         min(member0_.age) as col_4_0_
-     *     from
-     *         member member0_
+     * count(member0_.member_id) as col_0_0_,
+     * sum(member0_.age) as col_1_0_,
+     * avg(cast(member0_.age as double)) as col_2_0_,
+     * max(member0_.age) as col_3_0_,
+     * min(member0_.age) as col_4_0_
+     * from
+     * member member0_
      */
     @DisplayName("집계 함수")
     @Test
@@ -298,5 +295,67 @@ public class QuerydslBasicTest {
 
         assertThat(teamB.get(team.name)).isEqualTo("teamB");
         assertThat(teamB.get(member.age.avg())).isEqualTo(35); // (30 + 40) / 35
+    }
+
+    @DisplayName("조인 - 기본 조인")
+    @Test
+    public void basicJoin() {
+        //given & when
+        List<Member> membersOfTeamA = queryFactory
+                .selectFrom(member)
+                .join(member.team, team)
+                .where(team.name.eq("teamA"))
+                .fetch();
+
+        //then
+        assertThat(membersOfTeamA.size()).isEqualTo(2);
+
+        assertThat(membersOfTeamA.get(0).getUsername()).isEqualTo("member1");
+        assertThat(membersOfTeamA.get(0).getAge()).isEqualTo(10);
+        assertThat(membersOfTeamA.get(0).getTeam().getName()).isEqualTo("teamA");
+
+        assertThat(membersOfTeamA.get(1).getUsername()).isEqualTo("member2");
+        assertThat(membersOfTeamA.get(1).getAge()).isEqualTo(20);
+        assertThat(membersOfTeamA.get(1).getTeam().getName()).isEqualTo("teamA");
+    }
+
+    @DisplayName("조인 - left outer 조인")
+    @Test
+    public void leftJoin() {
+        //given & when
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .leftJoin(member.team, team)
+                .where(team.name.eq("teamA"))
+                .fetch();
+
+        //then
+        assertThat(result);
+    }
+
+    /**
+     * 세타 조인
+     * 회원의 이름이 팀 이름과 같은 회원 조회
+     *
+     * 단점: 외부 조인 불가능
+     */
+    @DisplayName("세타 조인")
+    @Test
+    public void theta_join() {
+        //given & when
+        em.persist(new Member("teamA", 20));
+        em.persist(new Member("teamB", 30));
+        em.persist(new Member("teamC", 30));
+
+        List<Member> result = queryFactory
+                .select(member)
+                .from(member, team)
+                .where(member.username.eq(team.name))
+                .fetch();
+
+        //then
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result).extracting("username")
+                .containsExactly("teamA", "teamB");
     }
 }
