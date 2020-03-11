@@ -1,5 +1,6 @@
 package study.querydsl;
 
+import com.querydsl.core.QueryResults;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,7 +14,10 @@ import study.querydsl.entity.Team;
 
 import javax.persistence.EntityManager;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static study.querydsl.entity.QMember.*;
 import static study.querydsl.entity.QMember.member;
 
 @Transactional
@@ -121,5 +125,42 @@ public class QuerydslBasicTest {
 
         // then
         assertThat(foundOne.getUsername()).isEqualTo("member1");
+    }
+
+    @DisplayName("다양한 검색 조건을 이용한 쿼리")
+    @Test
+    public void variousSearchConditions() {
+        // given & when
+        List<Member> fetch = queryFactory
+                .selectFrom(member)
+                .fetch();
+
+        // 결과 없으면 널, 둘 이상이면 NonUniqueResultException
+        Member fetchOne = queryFactory
+                .selectFrom(member)
+                .where(member.username.eq("member1"))
+                .fetchOne();
+
+        Member fetchFirst = queryFactory
+                .selectFrom(member)
+                .fetchFirst();
+
+        List<Member> equalFetchFirst = queryFactory
+                .selectFrom(member)
+                .limit(1).fetch();
+
+        // 결과, count 쿼리 2번 나감, 성능이 중요한 이슈일때 사용하면 안됨
+        QueryResults<Member> results = queryFactory
+                .selectFrom(member)
+                .fetchResults();
+
+        results.getTotal();
+        List<Member> content = results.getResults();
+
+        //  count 쿼리 한번만 침
+        long count = queryFactory
+                .selectFrom(member)
+                .fetchCount();
+
     }
 }
