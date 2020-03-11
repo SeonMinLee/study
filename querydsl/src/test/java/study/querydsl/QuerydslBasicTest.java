@@ -161,6 +161,37 @@ public class QuerydslBasicTest {
         long count = queryFactory
                 .selectFrom(member)
                 .fetchCount();
+    }
 
+    /**
+     * 정렬 순서
+     * 1. 나이 내림차순
+     * 2. 이름 올림차순
+     * 단 2에서 이름이 없으면 마지막에 출력(nulls last)
+     */
+    @DisplayName("정렬")
+    @Test
+    public void sort() {
+        //given
+        Member nullMember = new Member(null, 100);
+        Member member5 = new Member("member5", 100);
+        Member member6 = new Member("member6", 100);
+
+        em.persist(nullMember);
+        em.persist(member5);
+        em.persist(member6);
+
+        //when
+        List<Member> fetchResult = queryFactory
+                .selectFrom(member)
+                .where(member.age.eq(100))
+                .orderBy(
+                        member.age.desc(),
+                        member.username.asc().nullsLast())
+                .fetch();
+
+        //then
+        assertThat(fetchResult)
+                .containsSequence(member5, member6, nullMember);
     }
 }
