@@ -194,4 +194,47 @@ public class QuerydslBasicTest {
         assertThat(fetchResult)
                 .containsSequence(member5, member6, nullMember);
     }
+
+    /**
+     * 쿼리 결과
+     * select
+     *         member0_.member_id as member_i1_1_,
+     *         member0_.age as age2_1_,
+     *         member0_.team_id as team_id4_1_,
+     *         member0_.username as username3_1_
+     *     from
+     *         member member0_
+     *     order by
+     *         member0_.username desc limit ? offset ?
+     */
+    @DisplayName("페이징 - 1")
+    @Test
+    public void paging1() {
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .orderBy(member.username.desc())
+                .offset(1)
+                .limit(2)
+                .fetch();
+
+        assertThat(result.size()).isEqualTo(2);
+    }
+
+    @DisplayName("페이징 - 2")
+    @Test
+    public void test() {
+        //given & when
+        QueryResults<Member> results = queryFactory
+                .selectFrom(member)
+                .orderBy(member.username.desc())
+                .offset(1)
+                .limit(2)
+                .fetchResults();
+
+        //then
+        assertThat(results.getTotal()).isEqualTo(2);
+        assertThat(results.getLimit()).isEqualTo(2);
+        assertThat(results.getOffset()).isEqualTo(1);
+        assertThat(results.getResults().size()).isEqualTo(2);
+    }
 }
