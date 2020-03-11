@@ -1,6 +1,8 @@
 # Querydsl
 Querydsl 공부 정리
 
+[샘플코드](src/test/java/study/querydsl/QuerydslBasicTest.java)
+
 ### Q타입 사용법
 ```java
 QMember qMember = new QMember("m"); // 별칭 직접 지정
@@ -39,4 +41,10 @@ member.username.startWith("jayden")  // link 'jayden%' 검색
 - `fetchResults()`: 페이징 정보 포함, total count 쿼리 추가 실행
 - `fetchCount()`: count 쿼리로 변경해서 count 수 조회
 
-[샘플코드](src/test/java/study/querydsl/QuerydslBasicTest.java)
+### GroupBy(), Having() 용법
+```java
+...
+    .groupBy(item.price)
+    .having(item.price.gt(1000))
+...
+```
