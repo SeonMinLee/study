@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.junit.jupiter:junit-jupiter:5.5.2'
+    implementation 'org.mockito:mockito-junit-jupiter:3.1.0'
+    implementation 'com.jayway.jsonpath:json-path:2.4.0'
+    implementation 'org.assertj:assertj-core:3.13.2'
+    implementation 'org.hamcrest:hamcrest:2.1'
+}
