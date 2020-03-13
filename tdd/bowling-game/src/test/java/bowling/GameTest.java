@@ -7,5 +7,6 @@ public class GameTest {
     @Test
     public void canCreateGame() {
         Game game = new Game();
+        game.roll(0);
     }
 }
