@@ -8,4 +8,8 @@ public class Movie {
     public int getPriceCode() {
         return priceCode;
     }
+
+    public boolean isNewReleaseAndRentedMoreOneDays(int daysRented) {
+        return getPriceCode() == Movie.NEW_RELEASE && daysRented > 1;
+    }
 }
