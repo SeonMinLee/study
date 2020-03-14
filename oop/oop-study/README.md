@@ -21,7 +21,7 @@
 캡슐화 + 다형성(추상화)  
          
 ---
-# 절차 비향 vs 객체지향
+# 절차 지향 vs 객체지향
 
 절차지향은 데이터 바탕으로 작동
 객체지향은 다른 객체의 데이터에 바로 접근할 수 없고 프로시저를 통해 접근해야 한다.
@@ -98,3 +98,188 @@
 ### 정리
 - 캡슐화: 기능의 구현을 외부에 감춤
 - 캡슐화를 통해 기능을 사용하는 코드에 영향을 주지 않고 (또는 최소화) 내부 구현을 변경할 수 있는 유연함
+
+# 다형성과 추상화
+## 다형성(Polymorphism)
+- 여러 모습을 갖는 것
+- 객체 지향에서는 한 객체가 여러 타입을 갖는 것
+    - 즉 한 객체가 여러 타입의 기능을 제공
+    - 타입 상속으로 다형성 구현
+        - 하위 타입은 상위 타입도 
+        
+### 다형성 예
+```java
+public class Timer {
+  public void start() {..}
+  public void stop() {..}
+} 
+
+public interface Rechargeable {
+  void charge(); 
+}
+
+public class IotTimer extends Timer implements  Rechargeable {
+  public void charge() {
+    ...
+  }
+}
+
+IotTimer it = new IotTimer();
+it.start();
+it.stop();
+
+Timer t = it;
+t.start();
+t.stop();
+
+Rechargeable r = it;
+r.charge();
+```
+
+## 추상화 (Abstraction)
+- 데이터나 프로세스 등을 의미가 비슷한 개념이나 의미 있는 표현으로 정의하는 과정
+- 두 가지 방식의 추상화
+    - 특정한 성질, 공통 성질(일반화)
+- 간단한 예
+    - DB의 USER 테이블: 아이디, 이름, 이메일
+    - Money 클래스: 통화, 금액
+    - 프린터: HP MXXX, 삼성 SL-M2XXX
+    - GPU: 지포스, 라데온
+    
+## 서로 다른 구현 추상화
+1. SCP로 파일 업로드
+2. HTTP로 데이터 전송
+3. DB 테이블에 삽입
+
+추상화=>
+
+푸시발송
+
+## 타입 추상화
+- 여러 구현 클래스를 대표하는 상위 타입 도출
+  - 흔히 인터페이스 타입으로 추상화
+  - 추상화 타입과 구현은 타입 상속으로 연결
+  
+> 기능에 대한 의미 제공
+> 구현은 제공하지 않음
+> 어떻게 구현할지 알 수 없음
+ <<Interface>>  
+  **Notifier**  
+  +notify(noti: Notification)
+
+EmailNotifier, SMSNotifier, KakaoNotifier - 콘크리트(concrete) 클래스
+
+## 추상 타입 사용
+- 추상 타입을 이용한 프로그래밍
+````java
+Notifier notifier = getNorifier(..);
+notifier.notify(someNoti);
+````
+- 추상 타입은 구현을 감춤
+    - 기능의 구현이 아닌 의도를 더 잘 드러냄
+    
+## 추상 타입 사용에 따른 이점: 유연함
+- 콘크리트 클래스를 직접 사용하면..
+1.
+```java
+private SmsSender smsSender;
+
+public void cancle(String ono) {
+    ... 주문 취소 처리
+    smsSender.sendSms(...);
+}
+```
+2.
+```java
+private SmsSender smsSender;
+private KakaoPush kakaoPush;
+
+public void cancle(String ono) {
+    ... 주문 취소 처리
+    if (pushEnabled) {
+        kakaoPush.push(..);
+    } else {
+        smsSender.sendSms(...);
+    }
+}
+```
+3.
+```java
+private SmsSender smsSender;
+private KakaoPush kakaoPush;
+private MailService mailSvc;
+
+public void cancle(String ono) {
+    ... 주문 취소 처리
+
+    if (pushEnabled) {
+        kakaoPush.push(..);
+    } else {
+        smsSender.sendSms(...);
+    }
+    mailSvc.endMail(..);
+}
+```
+1과 같은 상황에서 카카오 푸시가 추가되면 2와같은 코드가 추가되고  
+또 메일로 노티를 해주는 기능이 추가가 되면 3과 같은 코드가 된다.
+이렇게 구현하게 되면 주문 취소라는 본래의 로직변경이 아님에도    
+요구 사항 변경에 따라 주문 취소 코드도 함께 변경되야 한다.  
+즉, 본질과 상관없는 다른 요구사항의 변경 때문에 본질을 구현하고 있는 기능(코드)에 변화가 생긴다.  
+이러한 문제를 추상 타입을 이용하여 유연하게 고쳐보면..
+### 추상 타입 사용 이점: 유연함
+- 공통점을 도출하면
+SMS 전송, 카카오톡 보냄, 이메일 발송 | 추상화 >> 통지
+```java
+public void cancle(String ono) {
+  .. 주문 취소 처리
+    
+  Notifier notifier = getNotifier(..);
+  notifier.notify(..);
+}
+
+private Notifier getNotifier(..) {
+  if (pushEnabled) {
+    return new KakaoNotifier();
+  } else {
+    return new SmsNotifier();
+  }
+}
+```
+하지만 위 코드는 실제 구현부 getNotifier 메서드 안에 구현되어 있기 때문에  
+위 소스를 사용할 대상 접근 자체도 추상화를 하면..
+```java
+public void cancle(String ono) {
+  .. 주문 취소 처리
+  Norifier notifier = NotifierFactory.instance().getNotifier(..);
+  notifier.notify(..);
+}
+
+public interface NotifierFactory {
+  Notifier getNotifier(..);
+  
+  static NotifierFactory instance() {
+    return new DefaultNotifierFactory();
+  }
+}
+
+public DefaultNotifierFactory implements NotifierFactory {
+  public Notifier getNotifier(..) {
+    if (pushEnabled) {
+      return new KakaoNotifier();
+    } else {
+      return new SmsNotifier();
+    }
+  }
+}
+```
+이런식으로 코드를 구현하면 통지 방식이 변경 되더라도 본래의 주문 취소의 로직은 변경되지 않으면서  
+통지 방식은 변경 할 수 있는 유연함을 갖게 된다.  
+
+# 추상화는 의존 대상이 변경하는 시점에
+- 추상화 -> 추상 타입 증가 -> 복잡도 증가
+    - 아직 존재하지 않는 기능에 대한 이른 추상화는 주의: 잘못된 추상화 가능성, 복잡도만 증가
+    - 실제 변경/확장이 발생할 때 추상화 시도
+    
+# 추상화를 잘 하려면
+- 구현을 한 이유가 무엇 때문인지 생각해야 함
+SmsSender, KakaoPush, MailService 모두 Notifier 혹은 Messenger로 추상화 할 수 있다.

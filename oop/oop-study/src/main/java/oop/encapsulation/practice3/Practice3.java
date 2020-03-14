@@ -2,7 +2,7 @@ package oop.encapsulation.practice3;
 
 import java.util.concurrent.TimeUnit;
 
-public class Main {
+public class Practice3 {
 
     public static void main(String[] args) throws InterruptedException {
         Timer t = new Timer();

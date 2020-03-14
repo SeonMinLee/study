@@ -1,6 +1,6 @@
 package oop.encapsulation.practice4;
 
-public class Main {
+public class Practice4 {
 
     public void verifyEmails(String token) throws BadTokenException, AlreadyVerifiedException {
         Member member = findByToken(token);
