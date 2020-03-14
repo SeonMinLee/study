@@ -5,11 +5,7 @@ public class Rental {
     private int daysRented;
 
     public int getFrequentRenterPoints() {
-        if (movie.isNewReleaseAndRentedMoreOneDays(daysRented)) {
-            return 2;
-        } else {
-            return 1;
-        }
+        return movie.getFrequentedRenterPoints(daysRented);
     }
 
 }

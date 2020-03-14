@@ -9,7 +9,11 @@ public class Movie {
         return priceCode;
     }
 
-    public boolean isNewReleaseAndRentedMoreOneDays(int daysRented) {
-        return getPriceCode() == Movie.NEW_RELEASE && daysRented > 1;
+    public int getFrequentedRenterPoints(int daysRented) {
+        if (getPriceCode() == NEW_RELEASE && daysRented > 1) {
+            return 2;
+        } else {
+            return 1;
+        }
     }
 }
