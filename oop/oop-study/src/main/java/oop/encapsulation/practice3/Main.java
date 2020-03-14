@@ -4,7 +4,7 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
         Timer t = new Timer();
-        t.startTime = System.currentTimeMillis();
+        t.startTime();
 
         String message = "task.";
         for (int i = 0; i < 5; i++) {
@@ -16,10 +16,8 @@ public class Main {
             Thread.sleep(1000);
         }
 
-        t.stopTime = System.currentTimeMillis();
-
-        long elaspedTime = t.stopTime - t.startTime;
-        System.out.println(elaspedTime);
+        t.stopTime();
+        t.printElaspedTime();
     }
 
 
