@@ -1,5 +1,7 @@
 package oop.encapsulation.practice3;
 
+import java.util.concurrent.TimeUnit;
+
 public class Main {
 
     public static void main(String[] args) throws InterruptedException {
@@ -17,7 +19,7 @@ public class Main {
         }
 
         t.stopTime();
-        t.printElaspedTime();
+        t.printElapsedTime(TimeUnit.MILLISECONDS);
     }
 
 
