@@ -8,10 +8,10 @@ public class Practice01 {
         Member mem = findOne(id);
         if (mem == null) return AuthResult.NO_MATCH;
 
-        if (mem.getVerificationEmailStatus() != 2) {
+        if (mem.checkEmailVerified()) {
             return AuthResult.NO_EMAIL_VERIFIED;
         }
-        if (passwordEncoder.isPasswordValid(mem.getPassword(), pw, mem.getId())) {
+        if (mem.isPasswordValid(passwordEncoder,pw)) {
             return AuthResult.SUCCESS;
         }
         return AuthResult.NO_MATCH;
@@ -21,8 +21,7 @@ public class Practice01 {
         return new Member(id);
     }
 
-    private class PasswordEncoder {
-
+    public class PasswordEncoder {
         public boolean isPasswordValid(String memberPassword, String inputPassword, String memberId) {
             return memberPassword.equals(inputPassword);
         }
