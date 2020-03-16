@@ -307,6 +307,12 @@ SmsSender, KakaoPush, MailService 모두 Notifier 혹은 Messenger로 추상화 
   - 코드 추가에 따른 노동 시간 증가
   - 실수하기 쉽고 이로 인한 불필요한 디버깅 시간 증가
 
-[추상화 한 예시 코드](src/main/java/oop/polymorphism/tobe/)
+[추상화 한 예시 코드](src/main/java/oop/polymorphism/tobe/CloudFileManager.java)
 클라우드 파일 시스템 설계  
-<img src="img/img1.png" width="40%"></img>  
+<img src="img/img1.png" width="40%"></img>
+
+이것이 바로 OCP(Open-Closed Principle)  
+추상화를 잘 적용하면 CloudFileManager 객체는   
+다른 클라우드에 대한 기능적인 확장에는 열려있지만
+기능이 추가 된다고 해도 CloudFileManager 객체의 코드 수정은 필요 없게 되서  
+수정에는 닫혀 있게 된다.
