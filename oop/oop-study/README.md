@@ -316,3 +316,36 @@ SmsSender, KakaoPush, MailService 모두 Notifier 혹은 Messenger로 추상화 
 다른 클라우드에 대한 기능적인 확장에는 열려있지만
 기능이 추가 된다고 해도 CloudFileManager 객체의 코드 수정은 필요 없게 되서  
 수정에는 닫혀 있게 된다.
+
+# 상속보단 조립
+<img src="img/2.png" width="40%"> 
+
+상속은 재사용성을 늘려주지만 아래와 같은 단점이 발생할 수 있다.
+- 상위 클래스 변경 어려움
+    - 변경의 여파가 계층도를 따라 전파됨
+    - 상위 클래스는 하위 클래스에 대해 캡슐화가 어려워짐
+- 클래스 증가
+- 상속 오용
+
+## 상속의 단점 해결 방법 -> 조립
+- 조립(Composition)
+  - 여러 객체를 묶어서 더 복잡한 기능을 제공
+  - 보통 필드로 다른 객체를 참조하는 방식으로 조립
+  - 또는 객체를 필요 시점에 생성/구함
+```java
+public class FlowController {
+  private Encryptor encryptor = new Encrytot(); // 필드로 조립
+  
+  public void process() {
+    ...
+    byte[] encryptedData = encryptor.encryt(data);
+    ... 
+  }
+}
+```
+<img src="img/3.png" width="40%">
+
+>상속보다는 조립(Composition over inheritance)
+>- 상속하기에 앞서 조립으로 풀 수 없는지 검토
+>- 진짜 하위 타입인 경우에만 상속 사용
+
