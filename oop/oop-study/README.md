@@ -522,4 +522,105 @@ public class SSFileInfo implements FileInfo {
 기능 구현을 위해 다른 구성 요소를 사용하는 것
 - 의존의 예: 객체 생성, 메서드 호출, 데이터 사용
   
-의존은 변경이 전파될 가능성을 의미
+의존은 변경이 **전파**될 가능성을 의미
+- 의존하는 대상이 바뀌면 바뀔 가능성이 높아짐
+  - 예: 호출하는 메서드의 파라미터가 변경
+  - 예: 호출하는 메서드가 발생할 수 있는 익셉션 타입이 추가
+
+## 순환 의존은 의험하다!
+- 순환 의존 -> 변경 연쇄 전파 가능
+  - 클래스, 패키지, 모듈 등 모든 수준에서 순환 의존이 없게 해야 한다.
+
+의존의 대상은 적을수록 좋다
+
+
+#### 의존 대상이 많을 때 
+- 기능이 많을 때  
+  - 기능 별로 분리 고려  
+예시
+```java
+public class UserService {
+  public void regist(..) {
+    ...
+  }
+  public void changePw(..) {
+    ...
+  }
+  public void blockUser(..) {
+    ...
+  }
+}
+```
+분리 예시
+```java
+public class UserRegistService {
+  public void regist(..) {
+    ...
+  }
+}
+
+public class ChangePwService {
+  public void changePw(..) {
+    ...
+  }
+}
+
+public class UserBlockService {
+  public void blockUser(..) {
+    ...
+  }
+}
+```
+
+#### 의존 대상이 많을 때 2, 묶어 보기
+- 몇 가지 의존 대상을 단일 기능으로 묶어서 생각해보면 의존 대상을 줄일 수 있음
+
+## 의존 대상 객체를 직접 생성하면?
+- 생성 클래스가 바뀌면 **의존**하는 코드도 바뀜  
+- 의존 대상 객체를 직접 생성하지 않는 방법
+  - 팩토리, 빌더
+  - 의존 주입(Dependency Injection)
+    - 외부에서 의존 객체를 주입
+      - 생성자나 메서드, 필드를 이용해서 주입
+  - 서비스 로케이터(Service Locator)
+
+
+## 조립기(Assembler)
+- 조립기가 객체 생성, 의존 주입을 처리
+  - 예: 스프링 프레임워크
+```java
+@Configuration
+public class Config {
+  @Bean
+  public ScheduleService scheduleSvc() {
+    ScheduleService svc = 
+        new ScheduleService(repo());
+    svc.setCalculator(expCal());
+    return svc;
+  }
+
+  @Bean
+  public UserRepository repo() {...}
+
+  @Bean
+  public Calculator expCal() {...}
+
+}
+```
+```java
+// 초기화
+ctx = new AnnotationConfigApplicationContext(Config.class);
+
+// 사용할 객체 구함
+ScheduleService svc = ctx.getBean(ScheduleService.class);
+
+// 사용
+svc.getSchedule(..);
+
+```
+
+### DI 장점 1
+상위 타입을 사용할 경우 의존 대상이 바뀌면 조립기(설정)만 변경 하면 
+
+#### DI 장점 2
+의존하는 객체 없이 대역 객체를 사용해서 테스트 가능
