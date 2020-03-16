@@ -349,3 +349,168 @@ public class FlowController {
 >- 상속하기에 앞서 조립으로 풀 수 없는지 검토
 >- 진짜 하위 타입인 경우에만 상속 사용
 
+# 기능과 책임 분리
+## 기능 분해
+**기능은 하위 기능으로 분해**
+암호 변경 기능을 예로 들었을 때
+- 암호 변경
+  - 변경 대상 확인
+    - 변경 대상 구함
+    - 대상 없으면 오류 응답
+  - 대상 암호 변경
+    - 암호 일치 여부 확인
+      - 불일치 하면 암호 불일치 응답
+    - 암호 데이터 변경
+    
+## 기능을 누가 제공할 것인가?
+### 기능은 곧 책임 
+ 분리한 각 기능을 알맞게 분배
+ 
+- 암호 변경 [ChangePasswordService]
+  - 변경 대상 확인
+    - 변경 대상 구함 [MemberRepository]
+    - 대상 없으면 오류 응답
+  - 대상 암호 변경 [Member]
+    - 암호 일치 여부 확인
+      - 불일치 하면 암호 불일치 응답
+    - 암호 데이터 변경 
+    
+### 큰 클래스, 큰 메서드
+- 클래스나 메서드가 커지면 절차 지향의 문제 발생
+  - 큰 클래스 -> 많은 필드를 많은 메서드가 공유
+  - 큰 메서드 -> 많은 변수를 많은 코드가 고융
+  - 여러 기능이 한 클래스/메서드에 섞여 있을 가능성
+- 책임에 따라 알맞게 코드 분리 필요
+- 필드나 변수는 곧 데이터이기 때문에 서로 다른코드가 데이터를 읽고 변경하면서 점점 코드를 분경하기 어려워 진다.  
+
+#### 책임 분배/분리 방법
+- 패턴 적용
+- 계산 기능 분리
+- 외부 연동 분리
+- 조건별 분기는 추상화
+
+# 패턴 적용
+## 전형적인 역할 분리
+- 간단한 웹
+  - 컨트롤러, 서비스, DAO
+- 복잡한 도메인
+  - 엔티티, 밸류, 리포지토리, 도메인 서비스
+- AOP
+  - Aspect(공통 기능)
+- GoF
+  - 팩토리, 빌더, 전략, 템플릿 메서드, 프록시/데코레이터 등
+
+## 계산 분리
+분리 전
+```java
+Member member = memberRepository.findOne(id);
+Product product = productRepository.findOne(prodId);
+
+int payAmount = product.price() * orderReq.getAmount();
+double pointRate = 0.01;
+if (member.getMembership() == GOLD) {
+  pointRate = 0.03;
+} else if (member.getMembership() == SILBER) {
+  pointRate = 0,02;
+}
+if (isDoublePointTarget(product)) {
+  pointRate *= 2;
+}
+
+int point = (int) (payAmount * pointRate);
+```
+
+분리 후
+```java
+Member member = memberRepository.findOne(id);
+Product product = productRepository.findOne(prodId);
+
+int payAmount = product.price() * orderReq.getAmout();
+PointCalculator cal = new PointCalculator(
+  payAmount, member.getMemberShip(), product.getId()
+);
+int point = cal.calculate();
+
+public class PointCalculator {
+  ...membership, payAmount, prodId 필드/생성자
+    
+  public int calculate() {
+    double pointRate = 0.01;
+    if (member.getMembership() == GOLD) {
+      pointRate = 0.03;
+    } else if (member.getMembership() == SILBER) {
+      pointRate = 0,02;
+    }
+    if (isDoublePointTarget(product)) pointRate *= 2;
+    return (int) (payAmount * pointRate);  
+  }
+}
+```
+
+## 연동 분리
+네트워크, 메시징, 파일 등 연동 처리 코드 분리
+
+분리 전
+```java
+Product prod = findOne(id);
+
+RestTemplate rest = new RestTemplate();
+List<RecoItem> recoItems = 
+  rest.get("http://internal/recommend?id=" + prod.getId() + 
+  "&user=" + userId + "&category=" + prod.getCategory(),  
+  RecoItem.class);
+```
+
+분리 후
+```java
+Product prod = findOne(id);
+
+RecommendService recoService = new RecommendService();
+List<RecoItem> recoItems = 
+  recoService.getRecoItems(prod.getId(), userId, prod.getCategory());
+
+```
+
+## 연속적인 if-else는 추상화 고민
+
+분리 전
+```java
+String fileUrl = "";
+if (fileId.startWith("local:")) {
+  fileUrl = "/files/" + fileId.substring(6);
+
+} else if (fileId.startWith("ss:")) {
+  fileUrl = "http:/fileserver/files/" + fileId.substring(3);
+}
+```
+
+분리 후
+```java
+FileInfo fileInfo = FileInfo.getFileInfo(fileUrl);
+String fileUrl = fileInfo.getUrl();
+ 
+  *  *  *
+
+public interface FileInfo {
+  String getUrl();
+
+  static FileInfo getFileInfo(..) {...}
+}
+
+  *  *  *
+
+public class SSFileInfo implements FileInfo {
+  private String fileId;
+  
+  public String getUrl() {
+    return "http://fileserver/files/" +
+        fileId.substring(3);
+  }
+}
+```
+> 주의: 의도 잘 드러나는 이름 사용
+> 예, HTTP로 추천 데이터 읽어오는 기능 분리시
+> - RecommendService > HttpDataService
+
+#### 역할 분리가 잘 되면? 테스트도 용이해짐
+
