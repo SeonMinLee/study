@@ -5,3 +5,11 @@ oop/gof-practice/.classpath
 oop/gof-practice/.project
 oop/gof-practice/.settings/
 oop/gof-practice/bin/
+
+tdd/learn-test/.gitignore
+tdd/learn-test/build.gradle
+tdd/learn-test/gradle/
+tdd/learn-test/gradlew
+tdd/learn-test/gradlew.bat
+tdd/learn-test/settings.gradle
+
