@@ -59,4 +59,4 @@ UML의 **시퀀스 다이어그램**은 프로그램이 작동할 때 어떤 메
 가로 방향으로 그려진 화살표 중 실선의 검은 화살표는 **메소드의 호출**을 나타나고 반대 반향의 점선의 화살표는 **메소드에서의 리턴(반환)** 을 표시한다  
 
 # 디자인 패턴
-## [Iterator(반복자) 패턴](designPattern/1-IteratorPattern.md)
+## [Iterator(반복자) 패턴](designPattern/1.IteratorPattern.md)
