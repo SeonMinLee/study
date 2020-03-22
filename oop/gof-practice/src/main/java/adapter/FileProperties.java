@@ -1,7 +1,8 @@
 package adapter;
 
-import java.io.*;
-import java.util.Map;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Properties;
 
 public class FileProperties implements FileIO {
@@ -11,30 +12,13 @@ public class FileProperties implements FileIO {
     @Override
     public void readFromFile(String fileName) throws IOException {
         FileReader fileReader = new FileReader(fileName);
-        BufferedReader bufferedReader = new BufferedReader(fileReader);
-        String data;
-        while ((data = bufferedReader.readLine()) != null) {
-            System.out.println(data);
-        }
-
-        bufferedReader.close();
-        fileReader.close();
+        properties.load(fileReader);
     }
 
     @Override
     public void writeToFile(String fileName) throws IOException {
         FileWriter fileWriter = new FileWriter(fileName);
-        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-
-        for (Map.Entry<Object, Object> objectObjectEntry : properties.entrySet()) {
-            String str = objectObjectEntry.getKey() + "=" + objectObjectEntry.getValue();
-            System.out.println(str);
-            bufferedWriter.write(str);
-            bufferedWriter.newLine();
-        }
-
-        bufferedWriter.close();
-        fileWriter.close();
+        properties.store(fileWriter, "written by FileProperties");
     }
 
     @Override
@@ -44,6 +28,6 @@ public class FileProperties implements FileIO {
 
     @Override
     public String getValue(String key) {
-        return properties.get(key).toString();
+        return properties.getProperty(key);
     }
 }

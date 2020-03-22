@@ -7,6 +7,8 @@ public class Main {
         FileIO f = new FileProperties();
         try {
             f.readFromFile("./file.txt");
+            String year = f.getValue("year");
+            System.out.println(year);
             f.setValue("year", "2020");
             f.setValue("month", "3");
             f.setValue("day", "23");
