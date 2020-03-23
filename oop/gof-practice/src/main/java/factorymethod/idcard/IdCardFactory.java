@@ -3,21 +3,24 @@ package factorymethod.idcard;
 import factorymethod.framework.Factory;
 import factorymethod.framework.Product;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class IdCardFactory extends Factory {
-    private List owners = new ArrayList();
+    public Map<String, String> database = new HashMap<>();
+
     @Override
-    protected Product createProduct(String owner) {
-        return new IdCard(owner);
+    protected synchronized Product createProduct(String owner) {
+        return new IdCard(owner, UUID.randomUUID().toString());
     }
 
     @Override
     protected void registerProduct(Product product) {
-        owners.add(((IdCard)product).getOwner());
+        database.put(((IdCard) product).getOwner(), ((IdCard) product).getAuthorizationCode());
     }
-    public List getOwners() {
-        return owners;
+
+    public Map<String, String> getDatabase() {
+        return database;
     }
 }
