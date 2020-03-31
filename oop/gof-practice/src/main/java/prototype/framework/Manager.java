@@ -9,8 +9,8 @@ public class Manager {
         showcase.put(name, proto);
     }
 
-    public Product create(String protoname) {
+    public Product create(String protoname) throws CloneNotSupportedException {
         Product p = showcase.get(protoname);
-        return p.createClone();
+        return p.clone();
     }
 }

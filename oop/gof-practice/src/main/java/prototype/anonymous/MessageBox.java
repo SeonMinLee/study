@@ -24,13 +24,14 @@ public class MessageBox implements Product {
     }
 
     @Override
-    public Product createClone() {
+    public Product clone() {
         Product p = null;
-        try {
-            p = (Product) clone();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-        }
+        p = (Product) clone();
         return p;
+    }
+
+    @Override
+    public Product createClone() {
+        return null;
     }
 }

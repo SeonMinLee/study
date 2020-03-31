@@ -20,13 +20,16 @@ public class UnderlinePen implements Product {
     }
 
     @Override
+    public Product clone() {
+        Product p = null;
+        p = (Product) clone();
+        return p;
+    }
+
+    @Override
     public Product createClone() {
         Product p = null;
-        try {
-            p = (Product) clone();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-        }
+        p = (Product) clone();
         return p;
     }
 }

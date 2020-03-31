@@ -7,7 +7,7 @@ import prototype.framework.Product;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws CloneNotSupportedException {
         Manager manager = new Manager();
         UnderlinePen underlinePen = new UnderlinePen('~');
         MessageBox mBox = new MessageBox('*');
